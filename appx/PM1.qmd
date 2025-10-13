@@ -26,6 +26,6 @@ View(MentalHealthSurvey)
 - both of us will do a version of this and come back together and compare our results
 2nd task- clean data together
 3rd task- formulate questions together
-4th task- divide and conqur questions
+4th task- divide and conquer questions
 - create some visualizations
 5th task- come together, give each other feedback, and try to combine work into a cohesive data story
