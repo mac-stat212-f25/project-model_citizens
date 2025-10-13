@@ -2,7 +2,7 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Project Title",
+    "title": "Education & Wellbeing",
     "section": "",
     "text": "Your report goes here.\n\n\nCode\n# a test code chunk",
     "crumbs": [
@@ -29,17 +29,6 @@
     "crumbs": [
       "EDA",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Member 2 First Name & Last Name Initial</span>"
-    ]
-  },
-  {
-    "objectID": "eda/eda-member3.html",
-    "href": "eda/eda-member3.html",
-    "title": "Member 3 First Name & Last Name Initial",
-    "section": "",
-    "text": "Your exploratory data analysis of the team datasets go here.",
-    "crumbs": [
-      "EDA",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Member 3 First Name & Last Name Initial</span>"
     ]
   },
   {
