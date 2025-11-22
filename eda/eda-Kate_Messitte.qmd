@@ -84,11 +84,23 @@ data %>%
 ```
 
 ```{r}
-data %>% 
-  select(academic_workload, academic_pressure, average_sleep, study_satisfaction,
-         depression, anxiety, isolation, future_insecurity) %>%
-  ggcorr(method = c("pairwise.complete.obs", "pearson"),
-         label = TRUE, label_size = 3)
+library(ggcorrplot)
+
+corr_matrix <- cor(data %>%
+                     select(academic_workload, academic_pressure, study_satisfaction,
+                            depression, anxiety, isolation, future_insecurity),
+                   use = "pairwise.complete.obs", method = "pearson")
+
+ggcorrplot(corr_matrix, 
+           lab = TRUE, lab_size = 3,
+           hc.order = TRUE,
+           type = "lower") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(angle = 0)
+  )
+
+
 ```
 
 ```{r}
