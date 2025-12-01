@@ -1,0 +1,219 @@
+---
+title: "Tori D"
+---
+
+Work area to try code
+
+```{r}
+library(tidyverse)
+library(janitor) 
+library(viridisLite)
+library(stringr)
+library(purrr)
+```
+
+```{r}
+MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
+View(MentalHealthSurvey)
+```
+
+
+# Stress Relief Activities Count 
+```{r}
+MentalHealthSurvey <- MentalHealthSurvey |> 
+  mutate(
+    number_activities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  )
+```
+
+# Clean ifelse Function 
+```{r}
+present <- function(string) {
+  ifelse(str_detect(MentalHealthSurvey$stress_relief_activities, string), TRUE, FALSE)
+}
+```
+
+
+# Table of Stress Relief activies 
+```{r}
+Activity_spread <- MentalHealthSurvey |> 
+  select(stress_relief_activities, number_activities, cgpa, depression, anxiety, isolation, social_relationships, study_satisfaction, academic_workload, academic_pressure, financial_concerns, future_insecurity) |> 
+  mutate(
+    social_connections = present("Social Connections"), 
+    religious_activities = present("Religious Activities"),
+    online_entertainment = present("Online Entertainment"),
+    sports_fitness = present("Sports and Fitness"),
+    outdoor_activities = present("Outdoor Activities"),
+    creative_outlets = present("Creative Outlets"),
+    nothing = present("Nothing"),
+    sleep = present("Sleep")
+  )
+```
+
+# Most popular activities
+```{r}
+Activity_spread |> 
+  summarize(total_social = sum(social_connections), total_religious = sum(religious_activities), total_online = sum(online_entertainment), total_sports = sum(sports_fitness), total_outdoor = sum(outdoor_activities), total_creative = sum(creative_outlets), total_nothing = sum(nothing), total_sleep = sum(sleep))
+```
+
+# Mean Depression for each stress relief activity
+```{r}
+Activity_spread |> 
+  mutate(
+    across(.cols = everything(), ~ ifelse(., depression, NA))) |> 
+  select(social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep) |> 
+  pivot_longer(cols = c(1:7), names_to = "Activity", values_to = "Depression") |> 
+  filter(!is.na(Depression)) |> 
+  ggplot(aes(x = Activity, y = Depression)) +
+  geom_violin(aes(fill = Activity), alpha = 0.5) + 
+  theme_light()
+```
+
+# Mean Anxiety for each stress relief activity
+```{r}
+Activity_spread |> 
+  mutate(
+    across(.cols = everything(), ~ ifelse(., anxiety, NA))) |> 
+  select(social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep) |> 
+  pivot_longer(cols = c(1:7), names_to = "Activity", values_to = "Anxiety") |> 
+  filter(!is.na(Anxiety)) |> 
+  ggplot(aes(x = Activity, y = Anxiety)) +
+  geom_violin(aes(fill = Activity), alpha = 0.5) + 
+  theme_light()
+```
+
+# Mean Isolation for each stress relief activity
+```{r}
+Activity_spread |> 
+  mutate(
+    across(.cols = everything(), ~ ifelse(., isolation, NA))) |> 
+  select(social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep) |> 
+  pivot_longer(cols = c(1:7), names_to = "Activity", values_to = "Isolation") |> 
+  filter(!is.na(Isolation)) |> 
+  ggplot(aes(x = Activity, y = Isolation)) +
+  geom_violin(aes(fill = Activity), alpha = 0.5) + 
+  theme_light()
+```
+
+# Functions 
+```{r}
+column_creation <- function(data, category) {
+  category_col_name <- as.character(substitute(category))
+  mutate(data, 
+    across(
+      .cols = everything(), 
+      .fns = \(x) ifelse(x, data[[category_col_name]], NA), 
+      .names = "{col}_{category_col_name}"))
+} 
+
+#metric_table <- function(metric) {
+  #metric_name <- as.character(substitute(metric))
+  #cleaned <- Activity_spread |> 
+  #select({{metric_name}}, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep)  
+  #column_creation(cleaned, category = {{metric_name}}) |> 
+  #select(1, c(10:16))
+#}
+```
+
+
+# Mean mental health table
+```{r}
+Isolation_table <- Activity_spread |> 
+  select(isolation, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep) |> 
+  column_creation(category = isolation) |> 
+  select(c(10:16)) |> 
+  pivot_longer(cols = c(1:7), names_to = "Activity", values_to = "Isolation") |> 
+  mutate(
+    Activity = str_remove_all(Activity, "_isolation")
+  ) |> 
+  mutate(
+    row_id = row_number()
+  )
+
+Depression_table <- Activity_spread |> 
+  select(depression, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep) |> 
+  column_creation(category = depression) |> 
+  select(c(10:16)) |> 
+  pivot_longer(cols = c(1:7), names_to = "Activity", values_to = "Depression") |> 
+  mutate(
+    Activity = str_remove_all(Activity, "_depression")
+  ) |> 
+  mutate(
+    row_id = row_number()
+  )
+
+Anxiety_table <- Activity_spread |> 
+  select(anxiety, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep) |> 
+  column_creation(category = anxiety) |> 
+  select(c(10:16)) |> 
+  pivot_longer(cols = c(1:7), names_to = "Activity", values_to = "Anxiety") |> 
+  mutate(
+    Activity = str_remove_all(Activity, "_anxiety")
+  ) |> 
+  mutate(
+    row_id = row_number()
+  )
+
+Mean_mental_table <- left_join(Isolation_table, Depression_table, by = c("row_id", "Activity")) |> 
+  left_join(Anxiety_table, by = c("row_id", "Activity")) |> 
+  mutate(
+    mean_mental_health = (Isolation + Depression + Anxiety)/3 
+  )
+```
+
+# Visualization 
+```{r}
+Mean_mental_table |> 
+  ggplot(aes(x = Activity, y = mean_mental_health)) + 
+  geom_violin(aes(fill = Activity), alpha = 0.5) + 
+  theme_light()
+```
+# Creative Outlets
+```{r}
+Mean_mental_table |> 
+  filter(Activity == "creative_outlets") |> 
+  filter(!is.na(mean_mental_health)) |> 
+  pivot_longer(
+    cols = c(Isolation, Depression,  Anxiety), 
+    names_to = "type", 
+    values_to = "score"
+  ) |> 
+  ggplot(aes(x = type, y = score)) + 
+  geom_violin(aes(fill = type), alpha = 0.5) + 
+  theme_light()
+```
+
+# Outdoor Activities 
+```{r}
+Mean_mental_table |> 
+  filter(Activity == "outdoor_activities") |> 
+  filter(!is.na(mean_mental_health)) |> 
+  pivot_longer(
+    cols = c(Isolation, Depression,  Anxiety), 
+    names_to = "type", 
+    values_to = "score"
+  ) |> 
+  ggplot(aes(x = type, y = score)) + 
+  geom_violin(aes(fill = type), alpha = 0.5) + 
+  theme_light()
+```
+
+# Sleep 
+```{r}
+Mean_mental_table |> 
+  filter(Activity == "sleep") |> 
+  filter(!is.na(mean_mental_health)) |> 
+  pivot_longer(
+    cols = c(Isolation, Depression,  Anxiety), 
+    names_to = "type", 
+    values_to = "score"
+  ) |> 
+  ggplot(aes(x = type, y = score)) + 
+  geom_violin(aes(fill = type), alpha = 0.5) + 
+  theme_light()
+```
+
