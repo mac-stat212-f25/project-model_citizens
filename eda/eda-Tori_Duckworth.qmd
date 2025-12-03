@@ -17,17 +17,28 @@ View(MentalHealthSurvey)
 ```
 ## Averages 
 # Overall
+
 ```{r}
 MentalHealthSurvey |> 
-  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+  count()
 ```
-Through this we find that the average depression and anxiety are above for 3.2, and mean isolation is around the same. Academci workload is percieved as high on average. 
+
+
+```{r}
+MentalHealthSurvey |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload), mean(academic_pressure), mean(study_satisfaction), mean(future_insecurity), mean(social_relationships), mean(financial_concerns))
+```
+Through this we find that the average depression and anxiety are above for 3.2, and mean isolation is around the same. Academic workload is perceived as high on average. 
 
 # Gender
 ```{r}
 MentalHealthSurvey |> 
   group_by(gender) |> 
   summarise(mean(depression), mean(anxiety), mean(isolation))
+
+MentalHealthSurvey |> 
+  group_by(gender) |> 
+  count()
 ```
 Looking at the difference in gender we can see that there is small relationship with depression, anxiety and isolation levels. They tend to be higher in Female students in these majors. 
 
@@ -44,6 +55,10 @@ It is important to note there is only 2 students who are 26 and 2 students who a
 MentalHealthSurvey |> 
   group_by(degree_major) |> 
   summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+
+MentalHealthSurvey |> 
+  group_by(degree_major) |> 
+  count()
 ```
 Lookint at the different majors they surveyed we can see that academic workload is perceived as relatively high regardless of major, but general trend is Software Engineering being the hardest followed by Computer Science, Data Science and Information Technology. Software Engineering and Computer Science follows the same pattern, however information technology is higher on all mental health levels than data science. 
 
@@ -52,6 +67,10 @@ Lookint at the different majors they surveyed we can see that academic workload 
 MentalHealthSurvey |> 
   group_by(academic_year) |> 
   summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+
+MentalHealthSurvey |> 
+  group_by(academic_year) |> 
+  count()
 ```
 Looking by year we can see that seniors have the highest in every category except workload, followed by juniors and then freshman most likley because they are transitioning to school followed by sophmores. 
 
@@ -123,7 +142,23 @@ Looking at this we can see that individuals who face campus discrimination tend 
 ```{r}
 MentalHealthSurvey |> 
   ggplot(aes(x = academic_year, y = depression)) +
-  geom_boxplot()
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Depression", title = "Depression Frequency by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = anxiety)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Anxiety", title = "Anxiety Frequency by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = academic_workload)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Academic Workload", title = "Academic Workload by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = academic_pressure)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Academic Pressure", title = "Academic Pressure by Academic year")
 ```
 On average depression is highest in seniors and about the same in juniors and freshman but the lowest in sophmores. 
 
@@ -147,11 +182,28 @@ MentalHealthSurvey |>
       )
   ) |> 
   mutate(
+    depression = as.character(depression)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = depression, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Depression", y = "Number of activities", title = "Number of Stress releifs activies influence on depression")
+
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
     anxiety = as.character(anxiety)
   ) |> 
   group_by(NumberActivities) |> 
   ggplot(aes(x = anxiety, y = NumberActivities)) + 
-  geom_boxplot()
+  geom_boxplot() + 
+  labs(x = "Anxiety", y = "Number of activities", title = "Number of Stress releifs activies influence on anxiety")
 ```
 Turns out that people of all anxiety levels do a similar average amount of activities. 
 
