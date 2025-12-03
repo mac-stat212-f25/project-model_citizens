@@ -16,9 +16,9 @@ library(purrr)
 MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
 View(MentalHealthSurvey)
 ```
+### Looking at Stress Relief Activities 
 
-
-# Stress Relief Activities Count 
+#Stress Relief Activities Count 
 ```{r}
 MentalHealthSurvey <- MentalHealthSurvey |> 
   mutate(
@@ -110,13 +110,30 @@ column_creation <- function(data, category) {
       .names = "{col}_{category_col_name}"))
 } 
 
-#metric_table <- function(metric) {
-  #metric_name <- as.character(substitute(metric))
-  #cleaned <- Activity_spread |> 
-  #select({{metric_name}}, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep)  
-  #column_creation(cleaned, category = {{metric_name}}) |> 
-  #select(1, c(10:16))
-#}
+metric_table <- function(metric) {
+  metric_name <- as.character(substitute(metric))
+  cleaned <- Activity_spread |> 
+  select({{metric_name}}, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep)  
+  column_creation(cleaned, category = {{metric_name}}) |> 
+  select(1, c(10:16))
+}
+
+metric_table(isolation)
+```
+```{r}
+metric <- Activity_spread$isolation
+
+metric_name <- as.character(substitute(metric))
+  cleaned <- Activity_spread |> 
+  select(metric, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep)  
+  
+  # category_col_name <- as.character(substitute(metric))
+  # mutate(cleaned,
+  #   across(
+  #     .cols = everything(), 
+  #     .fns = \(x) ifelse(x, cleaned[[category_col_name]], NA), 
+  #     .names = "{col}_{category_col_name}"))
+  # select(1, c(10:16))
 ```
 
 
@@ -215,5 +232,35 @@ Mean_mental_table |>
   ggplot(aes(x = type, y = score)) + 
   geom_violin(aes(fill = type), alpha = 0.5) + 
   theme_light()
+```
+
+### Looking at GPA 
+```{r}
+MentalHealthSurvey |> 
+  mutate(mean_mental_health = (isolation + depression + anxiety)/3) |> 
+  ggplot(aes(x = cgpa, y = mean_mental_health)) + 
+  geom_boxplot() + 
+  theme_light()
+```
+
+```{r}
+MentalHealthSurvey |> 
+  count(cgpa)
+```
+
+
+```{r}
+MentalHealthSurvey |> 
+  filter(cgpa == "3.5-4.0" | cgpa == "3.0-3.5" | cgpa == "2.5-3.0") |> 
+  select(cgpa, isolation, depression, anxiety) |> 
+   pivot_longer(
+    cols = c(isolation, depression,  anxiety), 
+    names_to = "Type", 
+    values_to = "Score"
+  ) |> 
+  ggplot(aes(x = Type, y = Score)) + 
+  geom_violin(aes(fill = Type), alpha = 0.5) + 
+  theme_light() + 
+  facet_wrap(~cgpa)
 ```
 
