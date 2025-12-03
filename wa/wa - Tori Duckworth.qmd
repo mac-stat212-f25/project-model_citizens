@@ -179,15 +179,26 @@ Mean_mental_table <- left_join(Isolation_table, Depression_table, by = c("row_id
   left_join(Anxiety_table, by = c("row_id", "Activity")) |> 
   mutate(
     mean_mental_health = (Isolation + Depression + Anxiety)/3 
-  )
+  ) |> 
+  mutate(Activity = recode(Activity, 
+                           creative_outlets = "Creative Outlets", 
+                           online_entertainment = "Online Entertainment", 
+                           outdoor_activities = "Outdoor Activities", 
+                           religious_activities = "Religious Activities", 
+                           sleep = "Sleep", 
+                           social_connections = "Social Connections", 
+                           sports_fitness = "Sports & Fitness"
+  ))
 ```
 
 # Visualization 
-```{r}
+```{r, fig.width=11, fig.height=5}
 Mean_mental_table |> 
   ggplot(aes(x = Activity, y = mean_mental_health)) + 
   geom_violin(aes(fill = Activity), alpha = 0.5) + 
-  theme_light()
+  theme_light() + 
+  labs(y = "Average Mental Health") + 
+  theme
 ```
 # Creative Outlets
 ```{r}
