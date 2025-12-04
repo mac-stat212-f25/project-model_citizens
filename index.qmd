@@ -2,9 +2,338 @@
 title: "Report"
 ---
 
-Your report goes here.
 
 ```{r}
-# a test code chunk
+# Load necessary libraries
+library(tidyverse)
+library(janitor) 
+library(viridisLite)
+library(stringr)
+library(readr)
+library(skimr)
+library(psych)
+library(GGally)
+library(extrafont)
+library(showtext)
+library(ggcorrplot)
+library(dplyr)
 ```
 
+```{r}
+# read in data
+MentalHealthSurvey <- read_csv("data/raw/MentalHealthSurvey.csv")
+```
+
+## Averages 
+# Overall
+```{r}
+MentalHealthSurvey |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+```
+Through this we find that the average depression and anxiety are above for 3.2, and mean isolation is around the same. Academci workload is percieved as high on average. 
+
+# Gender
+```{r}
+MentalHealthSurvey |> 
+  group_by(gender) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+Looking at the difference in gender we can see that there is small relationship with depression, anxiety and isolation levels. They tend to be higher in Female students in these majors. 
+
+# Age
+```{r}
+MentalHealthSurvey |> 
+  group_by(age) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+```
+It is important to note there is only 2 students who are 26 and 2 students who are 23 so that is not enough data points for those ages. However looking at the other ages we can see that depression, anxiety and isolation tends to be all over the place, without a clear trend. This will either more looking into or we don't look at it deeply. 
+
+# Degree Major
+```{r}
+MentalHealthSurvey |> 
+  group_by(degree_major) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+```
+Lookint at the different majors they surveyed we can see that academic workload is perceived as relatively high regardless of major, but general trend is Software Engineering being the hardest followed by Computer Science, Data Science and Information Technology. Software Engineering and Computer Science follows the same pattern, however information technology is higher on all mental health levels than data science. 
+
+# Academic Year
+```{r}
+MentalHealthSurvey |> 
+  group_by(academic_year) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+```
+Looking by year we can see that seniors have the highest in every category except workload, followed by juniors and then freshman most likley because they are transitioning to school followed by sophomores.
+
+# GPA 
+```{r}
+MentalHealthSurvey |> 
+  group_by(cgpa) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+It is important to note that 5 people have a cumulative GPA of 0.0 - 0.0 and only 2 students have a cumulative GPA of 1.5-2.0 which might skew those data points. Looking at GPA we ca see from 2.0 up there is a rough trend in increasing depression. When looking at anxiety there is roughly the same trend except people with a 3.0-3.5 cgpa tend to have a slightly lower anxiety level, maybe because its a good grade but they are not trying to be perfect? Isolation follows that same trend funnily enough. 
+
+# Sports Engagement 
+```{r}
+MentalHealthSurvey |> 
+  group_by(sports_engagement) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+If you look at sports engagement there is a general trend the more they are engaged the less they feel depression, anxiety, and isolation. However once you get into doing sports 7+ times a week then it shoots up again, most likely because there is less time to spend doing other things. 
+
+# Campus Discrimination 
+```{r}
+MentalHealthSurvey |> 
+  group_by(campus_discrimination) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+People who feel and are discriminated tend to have a higher depression, anxiety and isolation which makes sense.
+
+# Residental Status 
+```{r}
+MentalHealthSurvey |> 
+  group_by(residential_status) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+Living on campus tends to decrease depression, anxiety and isolation but not a crazy amount. 
+
+# Num Stress Relief activities
+```{r}
+MentalHealthSurvey |> 
+  mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  group_by(NumberActivities) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+Looking at the number of activities that people engage with we can see that there is a general trend that the more activities a person does the better they feel. It is important to note that the the category 0, is one person so is kind of skewed by that. 
+
+
+# Anxiety and Depression by Academic year
+# Depression 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = depression)) +
+  geom_boxplot() +
+  labs(
+    title = "Depression Frequency by Academic Year",
+    x = "Academic Year",
+    y = "Depression")
+```
+
+# Anxiety 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = anxiety)) +
+  geom_boxplot()+
+  labs(
+    title = "Anxiety Frequency by Academic Year",
+    x = "Academic Year",
+    y = "Anxiety")
+```
+
+To begin exploring the relationships between mental health indicators and other variables, we examined how depression and anxiety levels vary across academic year. We observed elevated levels of both depression and anxiety among first-year students, followed by a noticeable dip in the second year, and then a steady rise through the third and fourth years. This pattern may reflect the initial transition-related stress experienced by first-year students, a temporary adjustment period in the second year, and then a gradual increase in academic pressure, workload, and future-oriented stress as students progress toward graduation.
+
+# Number of Activities and mental health outcomes
+```{r}
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
+    depression = as.character(depression)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = depression, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Depression", y = "Number of activities", title = "Number of Stress releifs activies influence on depression")
+
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
+    anxiety = as.character(anxiety)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = anxiety, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Anxiety", y = "Number of activities", title = "Number of Stress releifs activies influence on anxiety")
+```
+When examining the relationship between number of hobbies and mental health indicators, we observed a slight negative association between activities and depression levels—students who reported more hobbies tended to show lower levels of depression. However, this relationship was relatively weak and should be interpreted cautiously. In contrast, the number of activities showed no meaningful trend with anxiety, suggesting that hobbies may play a small protective role for depression but do not appear to influence anxiety levels in the same way.
+
+```{r}
+font_add(family = "RobotoCondensed", 
+         regular = "data/raw/Roboto_Condensed/static/RobotoCondensed-Regular.ttf",
+         bold = "data/raw/Roboto_Condensed/static/RobotoCondensed-Bold.ttf")
+showtext_auto()
+```
+
+## Counting function
+```{r}
+percent_calc <- function(column_name) {
+  MentalHealthSurvey |> 
+  count({{column_name}}) |> 
+  mutate(column_level = (n /sum(n)) * 100) |>
+  rename(scale_system = {{column_name}}) |> 
+  select(scale_system, column_level) |> 
+  as.data.frame()
+}
+```
+
+## Calculating Percentages & creating data set
+```{r}
+Depression <- percent_calc(depression) |> 
+  rename(depression = column_level)
+
+Anxiety <- percent_calc(anxiety) |> 
+  rename(anxiety = column_level)
+
+Isolation <- percent_calc(isolation) |> 
+  rename(isolation = column_level)
+
+Workload <- percent_calc(academic_workload) |> 
+  rename(academic_workload = column_level)
+  
+Pressure <- percent_calc(academic_pressure) |> 
+  rename(academic_pressure = column_level)
+
+Satisfaction <- percent_calc(study_satisfaction) |> 
+  rename(study_satisfaction = column_level)
+
+Insecurity <- percent_calc(future_insecurity) |> 
+  rename(future_insecurity = column_level)
+
+Organized_data <- left_join(Depression, Anxiety) |> 
+  full_join(Isolation) |>
+  full_join(Workload) |>
+  full_join(Pressure) |> 
+  full_join(Satisfaction) |> 
+  full_join(Insecurity) |> 
+  pivot_longer(names_to = "Metric", cols = c(depression, anxiety, isolation, academic_workload, academic_pressure, study_satisfaction, future_insecurity)) |> 
+    mutate(
+    value = 
+      case_when(
+      is.na(value) ~ 0, 
+      TRUE ~ value 
+      )) |> 
+  mutate(
+    scale_system = factor(scale_system, levels = c("1", "2", "3", "4", "5")),
+    value = case_when(
+      scale_system %in% c("1", "2", "3") ~ -value,
+      TRUE ~ value
+    )
+  ) |> 
+  mutate(
+    value = round(value)
+  ) |> 
+  mutate(scale_system = factor(scale_system, levels = c("5", "4", "1", "2", "3"))) 
+
+Organized_data$Metric <- recode(Organized_data$Metric, 
+                                "depression" = "Depression", 
+                                "anxiety" = "Anxiety", 
+                                "isolation" = "Isolation", 
+                                "academic_workload" = "Academic Workload", 
+                                "academic_pressure" = "Academic Pressure",
+                                "study_satisfaction" = "Study Satisfaction", 
+                                "future_insecurity" = "Future Insecurity"
+                                )
+
+```
+In order to get the data that I wanted from the data set in the correct format for the graphic I had in mind I had to calculate for each individual variable I wanted to look at. Then I had to combine them into a dataset and pivot them, and then restructure large sections in order for it to show up exactly as I wanted. This part was edited a lot throughout the creation of the visualization. 
+
+## Making Labels 
+```{r}
+Organzied_Data_labs <- Organized_data |> 
+  mutate(
+    scale_system = factor(scale_system, levels = c("4", "5", "1", "2", "3"))
+  ) |> 
+  group_by(Metric) |> 
+  arrange(Metric, scale_system) |> 
+  mutate(
+    pos = cumsum(value) - (0.5 * value),  
+    pos = case_when(
+      (scale_system %in% c("1", "2", "3") & Metric == "Anxiety") ~ -pos - 8,
+      (scale_system %in% c("1", "2", "3") & Metric == "Depression") ~ -pos - 10,
+      (scale_system %in% c("1", "2", "3") & Metric == "Isolation") ~ -pos - 8,
+      (scale_system %in% c("2", "3") & Metric == "Academic Workload") ~ -pos + 38,
+      (scale_system %in% c("1", "2", "3") & Metric == "Academic Pressure") ~ -pos + 33,
+      (scale_system %in% c("1", "2", "3") & Metric == "Study Satisfaction") ~ -pos + 35,
+      (scale_system %in% c("1", "2", "3") & Metric == "Future Insecurity") ~ -pos - 24, 
+      TRUE ~ pos
+  ),
+  value = abs(value), 
+  ) |> 
+  filter(value != 0) |> 
+  mutate(
+    value = as.character(value), 
+    value = paste0(value, "%")
+  )
+
+desired_order <- c("Future Insecurity", "Study Satisfaction", "Academic Pressure", "Academic Workload", "Isolation", "Anxiety", "Depression")
+```
+In order to get the numbers that hover over each part of the bar chart I had to create a separate dataset specifically for the geom_text. They then had to be moved around for each individual variable. It was hard to get precise through the math, so that is why there are "random" numbers amended, as I found that is what made them look the best. 
+
+## Creating graphs 
+```{r fig.width = 16, fig.height = 6, fig.alt = "A bar graph demonstrating what percentage of students rated each of the following categories on a scale of 1-5 in realtion to school. For Isolation, 16% said 1, 15% said 2, 23% said 3 (or neutral), 21% said 4, and 25% said 5. For Depression 15% of students said 1, 16% of students said 2, 24% of students said 3, 22% of students said 4, and 23% of students said 5. For Anxiety, 11% of students said 1, 21% of students said 2, 22% of students said 3, 26% of students said 4, and 20% of students said 5. In Academic workload, no students said it was 1 level difficulty, only 6% said 2, 25% said 3, while 44% said 4 and 25% said 5. Lastly 6% of students said academic pressure was a 1, 7% said 2, 21% said 3, 37% said 4, and 30% said 5."}
+ggplot(Organized_data, aes(x = factor(Metric, levels = desired_order), y = value, fill = scale_system)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  geom_text(data = Organzied_Data_labs, aes(y = pos, label = value), 
+            colour = "white", 
+            size = 5, family = "RobotoCondensed", face = "bold") +
+  coord_flip() +
+  scale_fill_manual(
+    values = c("1" = "#f45b5b", "2" = "#f4a261", "3" = "gray70",
+               "4" = "#4ea8de", "5" = "#0077b6"), 
+    limits = c("1", "2", "3", "4", "5")
+  ) +
+  scale_y_continuous(labels = abs) +
+  labs(
+    title = "Students Rating of Mental Health and College Factors on a Scale of 1-5",
+    fill = "Level:",
+    y = NULL, 
+    x = NULL
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(size = 20, face = "bold", color = "#2a4d69", hjust = 0.5, family = "RobotoCondensed"), 
+    plot.margin = unit(c(1, 2, 1, 1.5), "cm"), 
+    axis.text.y = element_text(size = 15, family = "RobotoCondensed", face = "bold"), 
+    legend.text = element_text(family = "RobotoCondensed", size = 14), 
+    legend.title = element_text(family = "RobotoCondensed", size = 15)
+  ) 
+```
+
+
+```{r}
+corr_matrix <- cor(MentalHealthSurvey %>%
+                     select(academic_workload, academic_pressure, study_satisfaction,
+                            depression, anxiety, isolation, future_insecurity),
+                   use = "pairwise.complete.obs", method = "pearson")
+
+ggcorrplot(corr_matrix, 
+           lab = TRUE, lab_size = 3,
+           hc.order = TRUE,
+           type = "lower") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(angle = 0)
+  )
+```
+
+This plot shows a correlation heatmap examining how academic workload and perceived pressure relate to different mental-health outcomes among mainly stem students. The warmer colors represent stronger positive correlations, meaning that as one variable increases, the other tends to increase as well. Cooler purple colors indicate negative correlations, meaning that as one increases, the other tends to decrease. One of the strongest relationships we found was between depression and anxiety, with a correlation of .84, suggesting these experiences often occur together. We also see that academic workload and academic pressure are moderately correlated with depression, anxiety, and feelings of isolation, supporting our hypothesis that heavier academic stress is associated with poorer well-being, but maybe not as strongly as originally believed. On the opposite side, study satisfaction is negatively correlated with all mental-health outcomes. This suggests that students who feel more satisfied and supported in their studies tend to report fewer negative well-being symptoms. Overall, these patterns indicate a clear connection between academic stress and mental health in this student population, and they help us identify which variables may be most important for further analysis.
