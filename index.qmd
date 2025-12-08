@@ -17,6 +17,10 @@ library(extrafont)
 library(showtext)
 library(ggcorrplot)
 library(dplyr)
+library(purrr)
+library(grid)
+library(patchwork)
+library(ggh4x)
 ```
 
 ```{r}
@@ -112,7 +116,7 @@ MentalHealthSurvey |>
 Looking at the number of activities that people engage with we can see that there is a general trend that the more activities a person does the better they feel. It is important to note that the the category 0, is one person so is kind of skewed by that. 
 
 
-# Anxiety and Depression by Academic year
+# Anxiety, Depression, and Isolation by Academic year
 # Depression 
 ```{r}
 MentalHealthSurvey |> 
@@ -134,6 +138,17 @@ MentalHealthSurvey |>
     x = "Academic Year",
     y = "Anxiety")
 ```
+# Isolation 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = isolation)) +
+  geom_boxplot() +
+  labs(
+    title = "Isolation Frequency by Academic Year",
+    x = "Academic Year",
+    y = "Isolation")
+```
+
 
 To begin exploring the relationships between mental health indicators and other variables, we examined how depression and anxiety levels vary across academic year. We observed elevated levels of both depression and anxiety among first-year students, followed by a noticeable dip in the second year, and then a steady rise through the third and fourth years. This pattern may reflect the initial transition-related stress experienced by first-year students, a temporary adjustment period in the second year, and then a gradual increase in academic pressure, workload, and future-oriented stress as students progress toward graduation.
 
