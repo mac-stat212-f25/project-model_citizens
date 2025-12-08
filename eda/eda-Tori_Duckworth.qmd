@@ -74,8 +74,13 @@ MentalHealthSurvey |>
 ```
 Looking by year we can see that seniors have the highest in every category except workload, followed by juniors and then freshman most likley because they are transitioning to school followed by sophmores. 
 
+
 # GPA 
 ```{r}
+MentalHealthSurvey |> 
+  group_by(cgpa) |> 
+  count()
+
 MentalHealthSurvey |> 
   group_by(cgpa) |> 
   summarise(mean(depression), mean(anxiety), mean(isolation))
@@ -159,6 +164,11 @@ MentalHealthSurvey |>
   ggplot(aes(x = academic_year, y = academic_pressure)) +
   geom_boxplot() + 
   labs(x = "Academic Year", y = "Academic Pressure", title = "Academic Pressure by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = isolation)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Isolation", title = "Isolation by Academic year")
 ```
 On average depression is highest in seniors and about the same in juniors and freshman but the lowest in sophmores. 
 
@@ -204,6 +214,22 @@ MentalHealthSurvey |>
   ggplot(aes(x = anxiety, y = NumberActivities)) + 
   geom_boxplot() + 
   labs(x = "Anxiety", y = "Number of activities", title = "Number of Stress releifs activies influence on anxiety")
+
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
+    isolation = as.character(isolation)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = isolation, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Isolation", y = "Number of activities", title = "Number of Stress releifs activies influence on Isolation")
 ```
 Turns out that people of all anxiety levels do a similar average amount of activities. 
 

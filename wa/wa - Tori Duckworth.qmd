@@ -10,6 +10,9 @@ library(janitor)
 library(viridisLite)
 library(stringr)
 library(purrr)
+library(grid)
+library(patchwork)
+library(ggh4x)
 ```
 
 ```{r}
@@ -118,14 +121,14 @@ metric_table <- function(metric) {
   select(1, c(10:16))
 }
 
-metric_table(isolation)
+#metric_table(isolation)
 ```
 ```{r}
-metric <- Activity_spread$isolation
+#metric <- Activity_spread$isolation
 
-metric_name <- as.character(substitute(metric))
-  cleaned <- Activity_spread |> 
-  select(metric, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep)  
+#metric_name <- as.character(substitute(metric))
+  #cleaned <- Activity_spread |> 
+  #select(metric, social_connections, religious_activities, online_entertainment, sports_fitness, outdoor_activities, creative_outlets, sleep)  
   
   # category_col_name <- as.character(substitute(metric))
   # mutate(cleaned,
@@ -192,33 +195,48 @@ Mean_mental_table <- left_join(Isolation_table, Depression_table, by = c("row_id
 ```
 
 # Visualization 
-```{r, fig.width=11, fig.height=5}
-Mean_mental_table |> 
+```{r, fig.width=10, fig.height=5}
+total_mean <- Mean_mental_table |> 
   ggplot(aes(x = Activity, y = mean_mental_health)) + 
   geom_violin(aes(fill = Activity), alpha = 0.5) + 
   theme_light() + 
-  labs(y = "Average Mental Health") + 
-  theme
+  labs(y = "Average Mental Health", title = "Mental Health per Stress Relief Activity") + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+      ) + 
+  scale_fill_manual(
+    values = c("Creative Outlets" = "#F94144", "Online Entertainment" = "#F3722C", "Outdoor Activities" = "#F8961E", "Religious Activities" = "#F9C74F", "Sleep" = "#90BE6D", "Social Connections" = "#43AA8B","Sports & Fitness" = "#577590")
+  )
 ```
 # Creative Outlets
 ```{r}
-Mean_mental_table |> 
-  filter(Activity == "creative_outlets") |> 
+Creative_outlet_focus <- Mean_mental_table |> 
+  filter(Activity == "Creative Outlets") |> 
   filter(!is.na(mean_mental_health)) |> 
   pivot_longer(
     cols = c(Isolation, Depression,  Anxiety), 
     names_to = "type", 
     values_to = "score"
-  ) |> 
-  ggplot(aes(x = type, y = score)) + 
+  ) 
+
+creative <- ggplot(Creative_outlet_focus, aes(x = type, y = score)) + 
   geom_violin(aes(fill = type), alpha = 0.5) + 
-  theme_light()
+  theme_light() + 
+  labs(x = "Mental Health Metric", y = "Score", title = "Creative Outlets") + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  ) + 
+  scale_fill_manual(
+    values = c("Anxiety" = "#3e2b6f", "Depression" = "#f27070", "Isolation" = "#ffd966")
+  )
 ```
 
 # Outdoor Activities 
 ```{r}
-Mean_mental_table |> 
-  filter(Activity == "outdoor_activities") |> 
+outdoor <- Mean_mental_table |> 
+  filter(Activity == "Outdoor Activities") |> 
   filter(!is.na(mean_mental_health)) |> 
   pivot_longer(
     cols = c(Isolation, Depression,  Anxiety), 
@@ -227,13 +245,23 @@ Mean_mental_table |>
   ) |> 
   ggplot(aes(x = type, y = score)) + 
   geom_violin(aes(fill = type), alpha = 0.5) + 
-  theme_light()
+  theme_light()  + 
+  labs(x = "Mental Health Metric", y = "Score", title = "Outdoor Activities") + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(), 
+    axis.title.y = element_blank()
+  ) + 
+  scale_fill_manual(
+    values = c("Anxiety" = "#3e2b6f", "Depression" = "#f27070", "Isolation" = "#ffd966")
+  )
 ```
+
 
 # Sleep 
 ```{r}
-Mean_mental_table |> 
-  filter(Activity == "sleep") |> 
+sleep <- Mean_mental_table |> 
+  filter(Activity == "Sleep") |> 
   filter(!is.na(mean_mental_health)) |> 
   pivot_longer(
     cols = c(Isolation, Depression,  Anxiety), 
@@ -242,16 +270,75 @@ Mean_mental_table |>
   ) |> 
   ggplot(aes(x = type, y = score)) + 
   geom_violin(aes(fill = type), alpha = 0.5) + 
-  theme_light()
+  theme_light() + 
+  labs(x = "Mental Health Metric", y = "Score", title = "Sleep") + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(), 
+    axis.title.y = element_blank()
+  ) + 
+  scale_fill_manual(
+    values = c("Anxiety" = "#3e2b6f", "Depression" = "#f27070", "Isolation" = "#ffd966")
+  )
 ```
+
+```{r}
+outlet_focus <- Mean_mental_table |> 
+  filter(Activity == "Creative Outlets"| Activity == "Outdoor Activities" | Activity == "Sleep" ) |> 
+  filter(!is.na(mean_mental_health)) |> 
+  pivot_longer(
+    cols = c(Isolation, Depression,  Anxiety), 
+    names_to = "type", 
+    values_to = "score"
+  ) |> 
+  ggplot(aes(x = type, y = score)) + 
+  geom_violin(aes(fill = type), alpha = 0.5) + 
+  theme_light() + 
+  labs(x = "Mental Health Metric", y = "Score") + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(), 
+  ) + 
+  scale_fill_manual(
+    values = c("Anxiety" = "#3e2b6f", "Depression" = "#f27070", "Isolation" = "#ffd966")
+  ) + 
+  facet_wrap2(~ Activity, 
+              strip = strip_themed(
+                background_x = elem_list_rect(fill = c("#F9414480", "#F8961E80", "#90Be6D80"), alpha = 0.5), 
+                text_x = elem_list_text(color = "black")))
+```
+
+
+# Combining the Plots 
+```{r, fig.width=12, fig.height=10}
+# combinded <- (total_mean)/(creative + outdoor + sleep & xlab(NULL)) + plot_layout(heights = c(2, 1))
+# 
+# wrap_elements(panel = combinded) +
+#   labs(tag = "Mental Health Metric") +
+#   theme(
+#     plot.tag = element_text(size = rel(1)),
+#     plot.tag.position = "bottom"
+#   )
+
+total_mean / outlet_focus + plot_layout(heights = c(2, 1))
+```
+
 
 ### Looking at GPA 
 ```{r}
-MentalHealthSurvey |> 
+gpa <- MentalHealthSurvey |> 
   mutate(mean_mental_health = (isolation + depression + anxiety)/3) |> 
   ggplot(aes(x = cgpa, y = mean_mental_health)) + 
-  geom_boxplot() + 
-  theme_light()
+  geom_boxplot(aes(fill = cgpa)) + 
+  theme_light() + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  ) + 
+  scale_fill_manual(
+    values = c("0.0-0.0" = "#FD5901", "1.5-2.0" = "#F78104", "2.0-2.5" = "#FAAB36", "2.5-3.0" = "#249EA0", "3.0-3.5" = "#008083", "3.5-4.0" = "#005F60")
+  ) + 
+  labs(x = "GPA", y = "Average Mental Health")
 ```
 
 ```{r}
@@ -260,8 +347,10 @@ MentalHealthSurvey |>
 ```
 
 
-```{r}
-MentalHealthSurvey |> 
+```{r, fig.width = 10, fig.height=5}
+strip_colors <- c("#249EA0", "#008083","#005F60")
+
+gpa_invest <- MentalHealthSurvey |> 
   filter(cgpa == "3.5-4.0" | cgpa == "3.0-3.5" | cgpa == "2.5-3.0") |> 
   select(cgpa, isolation, depression, anxiety) |> 
    pivot_longer(
@@ -272,6 +361,24 @@ MentalHealthSurvey |>
   ggplot(aes(x = Type, y = Score)) + 
   geom_violin(aes(fill = Type), alpha = 0.5) + 
   theme_light() + 
-  facet_wrap(~cgpa)
+  scale_fill_manual(
+    values = c("anxiety" = "#3e2b6f", "depression" = "#f27070", "isolation" = "#ffd966")
+  ) + 
+  facet_wrap2(~cgpa, strip = strip_themed(background_x = elem_list_rect(fill = c("#249EA0", "#008083","#005F60")))) + 
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank(), 
+    strip.background = element_rect(fill = strip_colors)
+  ) 
+
+```
+
+```{r, fig.height=8, fig.width=10}
+gpa / gpa_invest + plot_layout(heights = c(2, 1))
+```
+
+```{r}
+MentalHealthSurvey |> 
+  
 ```
 

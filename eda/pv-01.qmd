@@ -16,8 +16,8 @@ library(showtext)
 ```{r}
 MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
 font_add(family = "RobotoCondensed", 
-         regular = "data/raw/Roboto_Condensed/static/RobotoCondensed-Regular.ttf",
-         bold = "data/raw/Roboto_Condensed/static/RobotoCondensed-Bold.ttf")
+         regular = "../data/raw/Roboto_Condensed/static/RobotoCondensed-Regular.ttf",
+         bold = "../data/raw/Roboto_Condensed/static/RobotoCondensed-Bold.ttf")
 showtext_auto()
 ```
 ## Counting function
