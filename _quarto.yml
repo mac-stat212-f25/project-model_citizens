@@ -63,7 +63,8 @@ book:
       chapters:
         - eda/eda-Kate_Messitte.qmd
         - eda/eda-Tori_Duckworth.qmd
-        - eda/pv-01.qmd
+        - eda/wa - Kate Messitte.qmd
+        - eda/wa - Tori Duckworth.qmd
 
   appendices:
   - appx/proposal.qmd
