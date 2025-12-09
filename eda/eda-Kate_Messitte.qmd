@@ -211,17 +211,4 @@ ggplot(MentalHealthSurvey, aes(x = sleep_relief, fill = average_sleep)) +
     fill = "Average sleep"
   )
 ```
-```{r}
-ggplot(MentalHealthSurvey, aes(x = average_sleep, fill = sleep_relief)) +
-  geom_bar(position = "fill") +
-  scale_y_continuous(labels = scales::percent) +
-  theme_minimal() +
-  labs(
-    title = "Use of sleep as stress relief across sleep categories",
-    x = "Average sleep per night",
-    y = "Proportion of students",
-    fill = "Sleep listed?"
-  )
-)
-```
 
