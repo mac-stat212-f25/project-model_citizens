@@ -1,5 +1,5 @@
 ---
-title: "Report"
+title: "Final Report"
 ---
 
 
@@ -17,6 +17,7 @@ library(extrafont)
 library(showtext)
 library(ggcorrplot)
 library(dplyr)
+library(gt)
 ```
 
 ```{r}
@@ -24,43 +25,67 @@ library(dplyr)
 MentalHealthSurvey <- read_csv("data/raw/MentalHealthSurvey.csv")
 ```
 
-## Averages 
+## Introduction 
+
+College is known for being difficult, especially so for technology majors. All that stress is bound to take a toll on the mental fortitude of students. Depression, anxiety and isolation are issues that are known to plague students. Could academic pressure be to blame? Or are there other variables at play that can lower or raise these conditions? 
+
+This data set from Kaggle focuses on Computer Science, Data Science, Software Engineering and Information technology majors. It spans all 4 academic years and contains a multitude of self reported measures, including depression, anxiety and isolation. Mental health and future insecurity are scaled 1-5 based on frequency, with 5 being the most frequent. In contrast all other variables scored 1-5 are graded based on difficultly with 5 being the most difficult. In addition to these self reported variables the dataset contains a multitude of information on the condition of students lives that could provide insight into what technology students feel and why they are feeling it. 
+
+## Data Overview
+
+To start out it is important to get an idea of the sample that we are looking at so we can pinpoint any inconsistencies and understand our subject more in depth. It is also a good idea to get a general overview of the students views and lives to see if there is something abnormal worth investigating. 
+
 # Overall
 ```{r}
-MentalHealthSurvey |> 
-  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
-```
-Through this we find that the average depression and anxiety are above for 3.2, and mean isolation is around the same. Academci workload is percieved as high on average. 
+table <- MentalHealthSurvey |> 
+  summarise("Depression" = mean(depression), "Anxiety" = mean(anxiety), "Isolation" = mean(isolation), "Academic Workload" = mean(academic_workload))
 
-# Gender
-```{r}
-MentalHealthSurvey |> 
-  group_by(gender) |> 
-  summarise(mean(depression), mean(anxiety), mean(isolation))
+gt(table) |> 
+  tab_header(
+    title = "Means"
+  ) |> 
+  fmt_number(
+    decimals = 2
+  ) 
 ```
-Looking at the difference in gender we can see that there is small relationship with depression, anxiety and isolation levels. They tend to be higher in Female students in these majors. 
 
-# Age
-```{r}
-MentalHealthSurvey |> 
-  group_by(age) |> 
-  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
-```
-It is important to note there is only 2 students who are 26 and 2 students who are 23 so that is not enough data points for those ages. However looking at the other ages we can see that depression, anxiety and isolation tends to be all over the place, without a clear trend. This will either more looking into or we don't look at it deeply. 
+This table demonstrates that for all the students in the study average depression and anxiety are 3.2, which means that the frequency of these feelings is sometimes. Mean isolation is around the same frequency while academic workload is perceived as high and difficult on average. This hints that there might be a possible relationship between the two, but we cannot state that definitly from just the means. This is why 
 
 # Degree Major
 ```{r}
-MentalHealthSurvey |> 
+table <- MentalHealthSurvey |> 
   group_by(degree_major) |> 
-  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+  summarise("Depression" = mean(depression), "Anxiety" = mean(anxiety), "Isolation" = mean(isolation), "Academic Workload" = mean(academic_workload)) |> 
+  rename(
+    "Major" = degree_major
+  )
+
+gt(table) |> 
+  tab_header(
+    title = "Mean Mental Health & Academic Workload by Major"
+  ) |> 
+  fmt_number(
+    decimals = 2
+  )
 ```
-Lookint at the different majors they surveyed we can see that academic workload is perceived as relatively high regardless of major, but general trend is Software Engineering being the hardest followed by Computer Science, Data Science and Information Technology. Software Engineering and Computer Science follows the same pattern, however information technology is higher on all mental health levels than data science. 
+Looking at the different majors they surveyed we can see that academic workload is perceived as relatively high regardless of major, but general trend is Software Engineering being the hardest followed by Computer Science, Data Science and Information Technology. Software Engineering and Computer Science follows the same pattern, however information technology is higher on all mental health levels than data science. 
 
 # Academic Year
 ```{r}
-MentalHealthSurvey |> 
+table <-  MentalHealthSurvey |> 
   group_by(academic_year) |> 
-  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+  summarise("Depression" = mean(depression), "Anxiety" = mean(anxiety), "Isolation" mean(isolation), "Acadmeic Workload" = mean(academic_workload)) |> 
+  rename(
+    "Academic Year" = 
+  )
+
+gt(table) |> 
+  tab_header(
+    title = "Mean Mental Health & Academic Workload by Academic Year"
+  ) |> 
+  fmt_number(
+    decimals = 2
+  )
 ```
 Looking by year we can see that seniors have the highest in every category except workload, followed by juniors and then freshman most likley because they are transitioning to school followed by sophomores.
 
