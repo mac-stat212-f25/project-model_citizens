@@ -41,6 +41,7 @@ library(purrr)
 library(grid)
 library(patchwork)
 library(ggh4x)
+library(gt)
 ```
 
 # What does the expected output look like?
