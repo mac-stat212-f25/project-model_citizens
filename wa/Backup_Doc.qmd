@@ -1,5 +1,5 @@
 ---
-title: "Final Report"
+title: "Backup_Doc"
 ---
 
 
@@ -74,7 +74,7 @@ Looking at the different majors they surveyed we can see that academic workload 
 ```{r}
 table <-  MentalHealthSurvey |> 
   group_by(academic_year) |> 
-  summarise("Depression" = mean(depression), "Anxiety" = mean(anxiety), "Isolation" = mean(isolation), "Acadmeic Workload" = mean(academic_workload)) |> 
+  summarise("Depression" = mean(depression), "Anxiety" = mean(anxiety), "Isolation" mean(isolation), "Acadmeic Workload" = mean(academic_workload)) |> 
   rename(
     "Academic Year" = 
   )
