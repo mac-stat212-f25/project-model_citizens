@@ -1,5 +1,5 @@
 ---
-title: "Tori Duckworth Exploritory Data Analysis" 
+title: "Tori Duckworth" 
 ---
 
 ```{r}
