@@ -229,7 +229,7 @@ gt(table) |>
 ```
 If you look at sports engagement there is a general trend the more they are engaged the less they feel depression, anxiety, and isolation. However once you get into doing sports 7+ times a week then it shoots up again, most likely because there is less time to spend doing other things such as stress relieving activities. Interestingly perceive academic workload is highest in people who have the lowest sports engagement or do not sports, which could demonstrate more value and time placed into academic endeavors. While an intersting finding, it is one part of a puzzle. 
 
-### Campus Discrimination 
+## Campus Discrimination 
 ```{r}
 table <- MentalHealthSurvey |> 
   group_by(campus_discrimination) |> 
@@ -248,7 +248,7 @@ gt(table) |>
 ```
 This statistic clearly shows that those who experience campus discrimination have more frequently experience mental health issues. However campus discrimination has no extremely describable impact on how difficult they perceive their workload. This eludes to how multiple pressures effect mental health and it is hard to quantify the effects of just academics. While this data set did not have more information on this statistic, it would be an interesting relationship to investigate in the future. 
 
-### Residental Status 
+## Residental Status 
 ```{r}
 table <- MentalHealthSurvey |> 
   group_by(residential_status) |> 
@@ -365,7 +365,7 @@ While this data seems to have extremely interesting trends for those with lower 
 gpa <- MentalHealthSurvey |> 
   mutate(mean_mental_health = (isolation + depression + anxiety)/3) |> 
   ggplot(aes(x = cgpa, y = mean_mental_health)) + 
-  geom_boxplot(aes(fill = cgpa)) + 
+  geom_boxplot(aes(fill = cgpa), alpha = 0.5) + 
   theme_light() + 
   theme(
     legend.position = "none",
@@ -394,7 +394,7 @@ gpa_invest <- MentalHealthSurvey |>
   scale_fill_manual(
     values = c("anxiety" = "#0d3b66", "depression" = "#faf0ca", "isolation" = "#f4d35e")
   ) + 
-  facet_wrap2(~cgpa, strip = strip_themed(background_x = elem_list_rect(fill = c("#249EA0", "#008083","#005F60")))) + 
+  facet_wrap2(~cgpa, strip = strip_themed(background_x = elem_list_rect(fill = c("#249EA080", "#00808380","#005F6080")))) + 
   theme(
     legend.position = "none",
     strip.background = element_rect(fill = strip_colors),
@@ -408,7 +408,7 @@ gpa / gpa_invest + plot_layout(heights = c(2, 1))
 ```
 Here we can clearly see that there is in fact large variability in the mental health of students who fall into the top 3 gpa categories. In fact that variability grows larger as GPA increases. In the top GPA category 3.5-4.0, we can see that students tend to rate anxiety and depression a 4-5. However, they are more variable in their reports of how frequently they experience isolation. Within the GPA category 3.0-3.5 we can see that students in that category tend to rate their anxiety more between a 2-3, which is reflected in the mean above. However their frequency of depression and isolation tends to have an almost even distribution across all categories. This demonstrates that students within this GPA category have extremely variable mental health experiences, which could be due to other factors of their life. Lastly looking at 2.5-3.0 range we can see that they in fact tend to score anxiety higher than those in the category above them. Their depression trends a slight more middle distribution than even, meaning mroe students fall within that middle area for depression. Similar to students in the category above them they most likely have a diverse expereience with mental health that could be less effected by academics which is impacting these results. 
 
-### Number of Stress Relief activities
+## Number of Stress Relief activities
 ```{r}
 table <- MentalHealthSurvey |> 
   mutate(
@@ -597,7 +597,7 @@ total_mean <- Mean_mental_table |>
     panel.grid.minor = element_blank()
       ) + 
   scale_fill_manual(
-    values = c("Creative Outlets" = "#F94144", "Online Entertainment" = "#F3722C", "Outdoor Activities" = "#F8961E", "Religious Activities" = "#F9C74F", "Sleep" = "#90BE6D", "Social Connections" = "#43AA8B","Sports & Fitness" = "#577590")
+    values = c("Creative Outlets" = "#588B8B", "Online Entertainment" = "#FFFFFF", "Outdoor Activities" = "#FFD5C2", "Religious Activities" = "#F28F3B", "Sleep" = "#C8553D", "Social Connections" = "#2D3047","Sports & Fitness" = "#93B7Be")
   )
 ```
 
@@ -685,14 +685,14 @@ outlet_focus <- Mean_mental_table |>
   labs(x = "Mental Health Metric", y = "Score") + 
   theme(
     legend.position = "none",
-    panel.grid.minor = element_blank(), 
+    panel.grid = element_blank()
   ) + 
   scale_fill_manual(
     values = c("Anxiety" = "#0d3b66", "Depression" = "#faf0ca", "Isolation" = "#f4d35e")
   ) + 
   facet_wrap2(~ Activity, 
               strip = strip_themed(
-                background_x = elem_list_rect(fill = c("#F9414480", "#F8961E80", "#90Be6D80"), alpha = 0.5), 
+              background_x = elem_list_rect(fill = c("#588B8D80", "#FFD5C280", "#C8553D80"), alpha = 0.5), 
                 text_x = elem_list_text(color = "black")))
 ```
 
