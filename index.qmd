@@ -177,19 +177,41 @@ There was a relatively even distribution into how many students said they fell i
 
 ## Correlation of Variables
 ```{r}
+# Create manual labels for each variable
+pretty_labels <- c(
+  academic_workload   = "Academic Workload",
+  academic_pressure   = "Academic Pressure",
+  study_satisfaction  = "Study Satisfaction",
+  depression          = "Depression",
+  anxiety             = "Anxiety",
+  isolation           = "Isolation",
+  future_insecurity   = "Future Insecurity"
+)
+
+# Compute correlation matrix
 corr_matrix <- cor(MentalHealthSurvey %>%
                      select(academic_workload, academic_pressure, study_satisfaction,
                             depression, anxiety, isolation, future_insecurity),
-                   use = "pairwise.complete.obs", method = "pearson")
+                   use = "pairwise.complete.obs", 
+                   method = "pearson")
 
-ggcorrplot(corr_matrix, 
-           lab = TRUE, lab_size = 3,
-           hc.order = TRUE,
-           type = "lower") +
+# Plot with custom labels
+ggcorrplot(
+  corr_matrix,
+  lab = TRUE,
+  lab_size = 3,
+  hc.order = TRUE,
+  type = "lower",
+  colors = c("#f45b5b", "white", "#0077b6"),  # low, mid, high
+  outline.color = "white"
+) +
+   scale_x_discrete(labels = pretty_labels) +
+  scale_y_discrete(labels = pretty_labels) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     axis.text.y = element_text(angle = 0)
   )
+
 ```
 
 This plot shows a correlation heatmap examining how academic workload and perceived pressure relate to different mental-health outcomes among mainly stem students. The warmer colors represent stronger positive correlations, meaning that as one variable increases, the other tends to increase as well. Cooler purple colors indicate negative correlations, meaning that as one increases, the other tends to decrease. One of the strongest relationships we found was between depression and anxiety, with a correlation of .84, suggesting these experiences often occur together. We also see that academic workload and academic pressure are moderately correlated with depression, anxiety, and feelings of isolation, supporting our hypothesis that heavier academic stress is associated with poorer well-being, but maybe not as strongly as originally believed. On the opposite side, study satisfaction is negatively correlated with all mental-health outcomes. This suggests that students who feel more satisfied and supported in their studies tend to report fewer negative well-being symptoms. Overall, these patterns indicate a clear connection between academic stress and mental health in this student population, and they help us identify which variables may be most important for further analysis.
@@ -311,33 +333,37 @@ This table demonstrates the differences in mental health my academic year. Here 
 ```{r}
 MentalHealthSurvey |> 
   ggplot(aes(x = academic_year, y = depression)) +
-  geom_boxplot() +
+  geom_boxplot(fill = "#faf0ca80") +
   labs(
     title = "Depression Frequency by Academic Year",
     x = "Academic Year",
-    y = "Depression")
+    y = "Depression"
+  ) +
+  theme_minimal()
 ```
 
 ### Anxiety 
 ```{r}
 MentalHealthSurvey |> 
   ggplot(aes(x = academic_year, y = anxiety)) +
-  geom_boxplot()+
+  geom_boxplot(fill = "#0d3b6680")+
   labs(
     title = "Anxiety Frequency by Academic Year",
     x = "Academic Year",
-    y = "Anxiety")
+    y = "Anxiety") +
+  theme_minimal()
 ```
 
 ### Isolation
 ```{r}
 MentalHealthSurvey |> 
   ggplot(aes(x = academic_year, y = isolation)) +
-  geom_boxplot()+
+  geom_boxplot(fill = "#f4d35e80")+
   labs(
     title = "Isolation Frequency by Academic Year",
     x = "Academic Year",
-    y = "Anxiety")
+    y = "Anxiety")  +
+  theme_minimal()
 ```
 
 There are elevated levels of both depression, anxiety, and isolation, among first-year students, followed by a noticeable dip in the second year, and then a steady rise through the third and fourth years. This pattern may reflect the initial transition-related stress experienced by first-year students, a temporary adjustment period in the second year, and then a gradual increase in academic pressure, workload, and future-oriented stress as students progress toward graduation.
@@ -448,8 +474,9 @@ MentalHealthSurvey |>
   ) |> 
   group_by(NumberActivities) |> 
   ggplot(aes(x = depression, y = NumberActivities)) + 
-  geom_boxplot() + 
-  labs(x = "Depression", y = "Number of activities", title = "Number of Stress Relief activies influence on Depression")
+  geom_boxplot(fill = "#faf0ca80") + 
+  labs(x = "Depression", y = "Number of activities", title = "Number of Stress Relief activies influence on Depression") +
+  theme_minimal()
 ```
 
 ```{r}
@@ -466,8 +493,9 @@ MentalHealthSurvey |>
   ) |> 
   group_by(NumberActivities) |> 
   ggplot(aes(x = anxiety, y = NumberActivities)) + 
-  geom_boxplot() + 
-  labs(x = "Anxiety", y = "Number of activities", title = "Number of Stress Relief activies influence on Anxiety")
+  geom_boxplot(fill = "#0d3b6680") + 
+  labs(x = "Anxiety", y = "Number of activities", title = "Number of Stress Relief activies influence on Anxiety") +
+  theme_minimal()
 ```
 
 ```{r}
@@ -484,8 +512,9 @@ MentalHealthSurvey |>
   ) |> 
   group_by(NumberActivities) |> 
   ggplot(aes(x = isolation, y = NumberActivities)) + 
-  geom_boxplot() + 
-  labs(x = "Isolation", y = "Number of activities", title = "Number of Stress Relief activies influence on Isolation")
+  geom_boxplot(fill = "#f4d35e80") + 
+  labs(x = "Isolation", y = "Number of activities", title = "Number of Stress Relief activies influence on Isolation") +
+  theme_minimal()
 ```
 These boxplots demonstrate that students who experience mental health conditions at different frequencies tend to have the same number of stress relieving activities. Although the relative mean number of activies tends to show a possible trend for isolation and depression, the overlapping boxs indicate that it is not an extremely meaningful conclusion. There is to much overlap in the range for us to conclusivly say that the number of stress relieving activties a student does has a profound impact on their mental health. However, perhaps the type of activity that they do is more meaningful. 
 
@@ -731,6 +760,7 @@ sleep_tab <- MentalHealthSurvey %>%
 ggplot(MentalHealthSurvey, aes(x = sleep_relief, fill = average_sleep)) +
   geom_bar(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#EDAE4980", "#D1495B80", "#00798C80")) +
   theme_minimal() +
   labs(
     title = "Sleep duration among students who do vs. don't list sleep as stress relief",
@@ -738,6 +768,7 @@ ggplot(MentalHealthSurvey, aes(x = sleep_relief, fill = average_sleep)) +
     y = "Proportion of students",
     fill = "Average sleep"
   )
+
 ```
 When comparing students who listed sleep as a stress-relief activity with those who did not, it is expected to see meaningful differences in their actual sleep duration. However, both groups showed nearly identical sleep patterns: most students reported only 4–6 hours of sleep per night, and the proportion achieving 7–8 hours was similarly small across groups. Notably, students who identified sleep as a coping strategy were not any more likely to obtain sufficient rest. This mismatch between students’ intended coping behaviors and their real constraints suggests that knowledge of healthy strategies alone is insufficient—structural pressures such as heavy workloads and scheduling demands may limit students’ ability to engage in effective self-care. This insight adds to the broader narrative that multiple, interacting factors shape mental-health outcomes in high-pressure academic environments.
 
@@ -748,12 +779,15 @@ MentalHealthSurvey <- read_csv("data/raw/MentalHealthSurvey.csv")
 MentalHealthSurvey <- MentalHealthSurvey %>% 
   mutate(
     sleep_cat = case_when(
-      average_sleep < 6 ~ "< 6 hours",
-      average_sleep <= 8 ~ "6–8 hours",
-      average_sleep > 8 ~ "> 8 hours",
+      average_sleep >= 2 & average_sleep < 4 ~ "2–4 hours",
+      average_sleep >= 4 & average_sleep < 6 ~ "4–6 hours",
+      average_sleep >= 6 & average_sleep <= 8 ~ "6–8 hours",
       TRUE ~ NA_character_
     ),
-    sleep_cat = factor(sleep_cat, levels = c("< 6 hours", "6–8 hours", "> 8 hours"))
+    sleep_cat = factor(
+      sleep_cat,
+      levels = c("2–4 hours", "4–6 hours", "6–8 hours")
+    )
   )
 ```
 
@@ -764,14 +798,16 @@ MentalHealthSurvey %>%
     names_to = "outcome",
     values_to = "scores"
   ) %>% 
-  ggplot(aes(x = sleep_cat, y = scores)) +
+  ggplot(aes(x = sleep_cat, y = scores, fill = sleep_cat)) +
   geom_boxplot() +
   facet_wrap(~ outcome, scales = "free_y") +
+  scale_fill_manual(values = c("#EDAE4980", "#D1495B80", "#00798C80")) +
   theme_minimal() +
   labs(
     title = "Mental-health outcomes by sleep category",
     x = "Average sleep per night",
-    y = "Outcome score"
+    y = "Outcome score",
+    fill = "Sleep category"
   )
 ```
 
@@ -779,5 +815,4 @@ Across all four mental-health outcomes—anxiety, depression, isolation, and fut
 
 ## Conclusion 
 
-A variety of factors play into student mental health. Acaademic difficultly and how much work a student is doing certainly plays a role in their mental health. However, a single variable cannot be pinpointed as the only reason for students to feel mental health conditions. The pieces of people life as well as their dispositions work in various ways to contirbute to mental health. Regardless, we cannot dismiss academic difficultly and other aspects. It is crucial to give students the support they need to thrive academicially but also personally. 
-
+A variety of factors play into student mental health. Academic difficultly and how much work a student is doing certainly plays a role in their mental health. However, a single variable cannot be pinpointed as the only reason for students to feel mental health conditions. The pieces of people life as well as their dispositions work in various ways to contribute to mental health. Regardless, we cannot dismiss academic difficultly and other aspects. It is crucial to give students the support they need to thrive academically but also personally. 
