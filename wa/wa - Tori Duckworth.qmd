@@ -377,8 +377,4 @@ gpa_invest <- MentalHealthSurvey |>
 gpa / gpa_invest + plot_layout(heights = c(2, 1))
 ```
 
-```{r}
-MentalHealthSurvey |> 
-  
-```
 
