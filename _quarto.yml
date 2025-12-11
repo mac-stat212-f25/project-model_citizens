@@ -61,13 +61,13 @@ book:
 
     - part: "EDA"
       chapters:
-        - eda/eda-Kate_Messitte.qmd
+       # - eda/eda-Kate_Messitte.qmd
         - eda/eda-Tori_Duckworth.qmd
 
   appendices:
   - appx/proposal.qmd
   - appx/case-study.qmd
-  - wa/wa - Kate Messitte.qmd
+  #- wa/wa - Kate Messitte.qmd
   - wa/wa - Tori Duckworth.qmd
 
 
