@@ -12,8 +12,8 @@ library(stringr)
 
 Your exploratory data analysis of the team datasets go here.
 ```{r}
+# read in data
 MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
-View(MentalHealthSurvey)
 ```
 ## Averages 
 # Overall
