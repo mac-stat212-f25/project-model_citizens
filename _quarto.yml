@@ -61,8 +61,8 @@ book:
 
     - part: "EDA"
       chapters:
-        - eda/eda-Kate_Messitte.qmd
-        - eda/eda-Tori_Duckworth.qmd
+       # - eda/eda-Kate_Messitte.qmd
+      #  - eda/eda-Tori_Duckworth.qmd
 
   appendices:
   - appx/proposal.qmd
