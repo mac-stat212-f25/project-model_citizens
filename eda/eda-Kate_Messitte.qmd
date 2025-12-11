@@ -24,12 +24,12 @@ MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
 # skim(data)
 # ```
 
-```{r}
-data %>% 
-  summarize(across(everything(), ~ sum(is.na(.)))) %>% 
-  pivot_longer(everything(), names_to = "variable", values_to = "missing_count") %>%
-  arrange(desc(missing_count))
-```
+# ```{r}
+# data %>% 
+#   summarize(across(everything(), ~ sum(is.na(.)))) %>% 
+#   pivot_longer(everything(), names_to = "variable", values_to = "missing_count") %>%
+#   arrange(desc(missing_count))
+# ```
 
 ```{r}
 data %>%
