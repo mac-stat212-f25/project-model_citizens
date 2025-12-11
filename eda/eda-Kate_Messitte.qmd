@@ -13,16 +13,16 @@ library(GGally)
 # read in data
 MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
 ```
-```{r}
-# clean names just in case
-data <- MentalHealthSurvey %>% clean_names()
-
-# Quick structure
-glimpse(data)
-
-# Summary statistics
-skim(data)
-```
+# ```{r}
+# # clean names just in case
+# data <- MentalHealthSurvey %>% clean_names()
+# 
+# # Quick structure
+# glimpse(data)
+# 
+# # Summary statistics
+# skim(data)
+# ```
 
 ```{r}
 data %>% 
