@@ -3,20 +3,25 @@ title: "Kate M"
 ---
 
 ```{r}
+# load libraries
 library(readr)
 library(tidyverse)
 library(skimr)
 library(janitor)
 library(psych)
 library(GGally)
-# clean names just in case
-data <- MentalHealthSurvey %>% clean_names()
+# read in data
+MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
+```
+```{r}
+ # clean names just in case
+ data <- MentalHealthSurvey %>% clean_names()
 
-# Quick structure
-glimpse(data)
+ # Quick structure
+ glimpse(data)
 
-# Summary statistics
-skim(data)
+ # Summary statistics
+ skim(data)
 ```
 
 ```{r}
