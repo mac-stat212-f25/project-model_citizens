@@ -3,6 +3,7 @@ title: "Kate M"
 ---
 
 ```{r}
+library(tidyverse)
 # clean names just in case
 data <- MentalHealthSurvey %>% clean_names()
 
