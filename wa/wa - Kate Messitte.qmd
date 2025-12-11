@@ -48,42 +48,42 @@ MentalHealthSurvey <- MentalHealthSurvey %>%
   )
 ```
 
-```{r}
-# re-read data
-MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
-
-MentalHealthSurvey <- MentalHealthSurvey %>% 
-  mutate(
-    sleep_cat = case_when(
-      average_sleep >= 2 & average_sleep < 4 ~ "2–4 hours",
-      average_sleep >= 4 & average_sleep < 6 ~ "4–6 hours",
-      average_sleep >= 6 & average_sleep <= 8 ~ "6–8 hours",
-      TRUE ~ NA_character_
-    ),
-    sleep_cat = factor(
-      sleep_cat,
-      levels = c("2–4 hours", "4–6 hours", "6–8 hours")
-    )
-  )
-```
-
-```{r}
-MentalHealthSurvey %>% 
-  pivot_longer(
-    cols = c(depression, anxiety, isolation, future_insecurity),
-    names_to = "outcome",
-    values_to = "score"
-  ) %>% 
-  ggplot(aes(x = sleep_cat, y = score)) +
-  geom_boxplot() +
-  facet_wrap(~ outcome, scales = "free_y") +
-  theme_minimal() +
-  labs(
-    title = "Mental-health outcomes by sleep category",
-    x = "Average sleep per night",
-    y = "Outcome score"
-  )
-```
+# ```{r}
+# # re-read data
+# MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
+# 
+# MentalHealthSurvey <- MentalHealthSurvey %>% 
+#   mutate(
+#     sleep_cat = case_when(
+#       average_sleep >= 2 & average_sleep < 4 ~ "2–4 hours",
+#       average_sleep >= 4 & average_sleep < 6 ~ "4–6 hours",
+#       average_sleep >= 6 & average_sleep <= 8 ~ "6–8 hours",
+#       TRUE ~ NA_character_
+#     ),
+#     sleep_cat = factor(
+#       sleep_cat,
+#       levels = c("2–4 hours", "4–6 hours", "6–8 hours")
+#     )
+#   )
+# ```
+# 
+# ```{r}
+# MentalHealthSurvey %>% 
+#   pivot_longer(
+#     cols = c(depression, anxiety, isolation, future_insecurity),
+#     names_to = "outcome",
+#     values_to = "score"
+#   ) %>% 
+#   ggplot(aes(x = sleep_cat, y = score)) +
+#   geom_boxplot() +
+#   facet_wrap(~ outcome, scales = "free_y") +
+#   theme_minimal() +
+#   labs(
+#     title = "Mental-health outcomes by sleep category",
+#     x = "Average sleep per night",
+#     y = "Outcome score"
+#   )
+# ```
 
 ```{r}
 library(tidyverse)
