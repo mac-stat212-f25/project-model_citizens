@@ -1,0 +1,121 @@
+---
+title: "Kate M"
+---
+
+```{r}
+# load libraries
+library(readr)
+library(tidyverse)
+library(skimr)
+library(janitor)
+library(psych)
+library(GGally)
+# read in data
+MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
+```
+```{r}
+ # clean names just in case
+ data <- MentalHealthSurvey %>% clean_names()
+
+ # Quick structure
+ glimpse(data)
+
+ # Summary statistics
+ skim(data)
+```
+ 
+```{r}
+data %>%
+   summarize(across(everything(), ~ sum(is.na(.)))) %>%
+   pivot_longer(everything(), names_to = "variable", values_to = "missing_count") %>%
+   arrange(desc(missing_count))
+```
+
+
+```{r}
+data %>%
+  select(academic_workload, academic_pressure, depression, anxiety, isolation, 
+         average_sleep, sports_engagement, study_satisfaction) %>%
+  psych::describe()
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = academic_workload)) +
+  geom_histogram(bins = 20) +
+  labs(title="Distribution of Academic Workload")
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = depression)) +
+  geom_histogram(bins = 20) +
+  labs(title="Distribution of Depression Levels")
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = anxiety)) +
+  geom_histogram(bins = 20) +
+  labs(title="Distribution of Anxiety Levels")
+```
+# initial relationships
+```{r}
+data %>%
+  ggplot(aes(x = academic_workload, y = anxiety)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm") +
+  labs(title="Academic Workload vs Anxiety")
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = academic_pressure, y = depression)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm") +
+  labs(title="Academic Pressure vs Depression")
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = academic_workload, y = anxiety, color = sports_engagement)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm") +
+  labs(title="Moderation: Sports Engagement x Workload on Anxiety")
+```
+
+```{r}
+library(ggcorrplot)
+
+corr_matrix <- cor(data %>%
+                     select(academic_workload, academic_pressure, study_satisfaction,
+                            depression, anxiety, isolation, future_insecurity),
+                   use = "pairwise.complete.obs", method = "pearson")
+
+ggcorrplot(corr_matrix, 
+           lab = TRUE, lab_size = 3,
+           hc.order = TRUE,
+           type = "lower") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(angle = 0)
+  )
+
+
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = academic_year, y = anxiety)) +
+  geom_boxplot() +
+  labs(title="Anxiety levels by Academic Year")
+```
+
+```{r}
+data %>%
+  ggplot(aes(x = gender, y = depression)) +
+  geom_boxplot() +
+  labs(title="Depression Levels by Gender")
+```
+
+

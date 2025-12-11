@@ -1,0 +1,31 @@
+---
+title: "PM1"
+authors: "Kate Messitte and Tori Duckworth"
+format: html
+---
+
+## Project description
+In this project we are looking at the correlations between class level, work load and perceived difficulty and how those might impact the well being of students, mentally and physically. 
+
+## Research question(s)
+How do academic workload and perceived course difficulty relate to students' mental and physical well being?
+What extracurriculars moderate or mediate this relationship? How? 
+
+## Reason/inspriation
+Many students experience fluctuations in well being throughout the semester, often tied to workload, course difficulty, and academic level. This project was inspired by the observation that stress, burnout, and even physical health issues often intensify during demanding academic periods. Understanding these relationships can help school systems identify when and for whom academic pressures are most harmful.
+
+## Possible data set
+```{r}
+library(readr)
+MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
+View(MentalHealthSurvey)
+```
+
+## Rough impletation plan
+1st task- preliminary data analysis
+- both of us will do a version of this and come back together and compare our results
+2nd task- clean data together
+3rd task- formulate questions together
+4th task- divide and conqur questions
+- create some visualizations
+5th task- come together, give each other feedback, and try to combine work into a cohesive data story

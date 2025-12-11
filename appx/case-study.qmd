@@ -2,4 +2,34 @@
 title: "Case Study"
 ---
 
-Your case study go here.
+## Source:  
+Samora, Russell. “How News Media Covers Trump & Clinton.” *The Pudding*, 2017.  
+[How News Media Covers Trump & Clinton](https://pudding.cool/2017/03/elections/)
+
+## Overview:
+This case study analyzes The Pudding’s 2017 data-driven story about how major U.S. news outlets visually covered Trump and Clinton during the 2016 election. The purpose is to understand how the report structures a data story and use this approach to inform our own project.
+
+## Findings
+
+1. Research question introduced: How do media outlets visually portray the two candidates?  
+2. Data & scope stated: 12,147 Facebook images from 53 major U.S. outlets over two months.  
+3. Initial finding: Trump appears in more images than Clinton.  
+4. Engagement analysis: Trump-related posts receive more shares.  
+5. Outlet differences: Coverage patterns vary across news organizations and political lean.  
+6. Tone/emotion layer: Examines facial expressions and photo tone to discuss possible visual bias.  
+7. Methods section: Provides data collection and filtering details at the end for transparency.  
+
+The story moves from broad counts → engagement → media differences → emotional tone, building depth step-by-step.
+
+## Key Insights
+
+- Trump appeared more frequently and generated more engagement.  
+- Media outlets showed different patterns based on ideology.  
+- Tone and emotional expression in images may reflect subtle bias.  
+- The author avoids claiming causation, focusing on representation patterns.
+
+## Strengths: 
+clear flow, strong visuals with clear color coding, transparent methods, avoids over-claiming, text has specific elements that help pull out main points.
+
+## Limitations:
+only Facebook data; short time window; facial-expression analysis is partly subjective.

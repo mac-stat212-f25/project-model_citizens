@@ -1,0 +1,255 @@
+---
+title: "Tori Duckworth" 
+---
+
+```{r}
+library(tidyverse)
+library(janitor) 
+library(viridisLite)
+library(stringr)
+```
+
+
+Your exploratory data analysis of the team datasets go here.
+```{r}
+# read in data
+MentalHealthSurvey <- read_csv("../data/raw/MentalHealthSurvey.csv")
+```
+## Averages 
+# Overall
+
+```{r}
+MentalHealthSurvey |> 
+  count()
+```
+
+
+```{r}
+MentalHealthSurvey |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload), mean(academic_pressure), mean(study_satisfaction), mean(future_insecurity), mean(social_relationships), mean(financial_concerns))
+```
+Through this we find that the average depression and anxiety are above for 3.2, and mean isolation is around the same. Academic workload is perceived as high on average. 
+
+# Gender
+```{r}
+MentalHealthSurvey |> 
+  group_by(gender) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+
+MentalHealthSurvey |> 
+  group_by(gender) |> 
+  count()
+```
+Looking at the difference in gender we can see that there is small relationship with depression, anxiety and isolation levels. They tend to be higher in Female students in these majors. 
+
+# Age
+```{r}
+MentalHealthSurvey |> 
+  group_by(age) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+```
+It is important to note there is only 2 students who are 26 and 2 students who are 23 so that is not enough data points for those ages. However looking at the other ages we can see that depression, anxiety and isolation tends to be all over the place, without a clear trend. This will either more looking into or we don't look at it deeply. 
+
+# Degree Major
+```{r}
+MentalHealthSurvey |> 
+  group_by(degree_major) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+
+MentalHealthSurvey |> 
+  group_by(degree_major) |> 
+  count()
+```
+Lookint at the different majors they surveyed we can see that academic workload is perceived as relatively high regardless of major, but general trend is Software Engineering being the hardest followed by Computer Science, Data Science and Information Technology. Software Engineering and Computer Science follows the same pattern, however information technology is higher on all mental health levels than data science. 
+
+# Academic Year
+```{r}
+MentalHealthSurvey |> 
+  group_by(academic_year) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation), mean(academic_workload))
+
+MentalHealthSurvey |> 
+  group_by(academic_year) |> 
+  count()
+```
+Looking by year we can see that seniors have the highest in every category except workload, followed by juniors and then freshman most likley because they are transitioning to school followed by sophmores. 
+
+
+# GPA 
+```{r}
+MentalHealthSurvey |> 
+  group_by(cgpa) |> 
+  count()
+
+MentalHealthSurvey |> 
+  group_by(cgpa) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+It is important to note that 5 people have a cumulative GPA of 0.0 - 0.0 and only 2 students have a cumulative GPA of 1.5-2.0 which might skew those data points. Looking at GPA we ca see from 2.0 up there is a rough trend in increasing depression. When looking at anxiety there is roughly the same trend except people with a 3.0-3.5 cgpa tend to have a slightly lower anxiety level, maybe because its a good grade but they are not trying to be perfect? Isolation follows that same trend funnily enough. 
+
+# Sports Engagement 
+```{r}
+MentalHealthSurvey |> 
+  group_by(sports_engagement) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+If you look at sports engagement there is a general trend the more they are engaged the less they feel depression, anxiety, and isolation. However once you get into doing sports 7+ times a week then it shoots up again, most likely because there is less time to spend doing other things. 
+
+# Campus Discrimination 
+```{r}
+MentalHealthSurvey |> 
+  group_by(campus_discrimination) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+People who feel and are discriminated tend to have a higher depression, anxiety and isolation which makes sense. 
+
+# Residental Status 
+```{r}
+MentalHealthSurvey |> 
+  group_by(residential_status) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+Living on campus tends to decrese depression, anxiety and isolation but not a crazy amount. 
+
+# Num Stress Relief activities
+```{r}
+MentalHealthSurvey |> 
+  mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  group_by(NumberActivities) |> 
+  summarise(mean(depression), mean(anxiety), mean(isolation))
+```
+Looking at the number of activities that people engage with we can see that there is a general trend that the more activies a person does the better they feel. It is important to note that the the category 0, is one person so is kind of skewed by that. 
+
+## Depression Levels 
+# Overall
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = depression)) + 
+  geom_bar()
+```
+Looking at this graph we can see that on average depression level is 3, but 5 and 4 are close contenders. 
+
+# Campus Discrimination 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = depression, fill = campus_discrimination)) + 
+  geom_bar()
+```
+Looking at this we can see that individuals who face campus discrimination tend ot have a higher depression level. 
+
+# Academic Year 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = depression)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Depression", title = "Depression Frequency by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = anxiety)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Anxiety", title = "Anxiety Frequency by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = academic_workload)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Academic Workload", title = "Academic Workload by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = academic_pressure)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Academic Pressure", title = "Academic Pressure by Academic year")
+
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_year, y = isolation)) +
+  geom_boxplot() + 
+  labs(x = "Academic Year", y = "Isolation", title = "Isolation by Academic year")
+```
+On average depression is highest in seniors and about the same in juniors and freshman but the lowest in sophmores. 
+
+## Anxiety Levels 
+# Overall 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = anxiety)) + 
+  geom_bar()
+```
+Average anxiety is 4, then 3, 2 and then 5. 
+
+# 
+```{r}
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
+    depression = as.character(depression)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = depression, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Depression", y = "Number of activities", title = "Number of Stress releifs activies influence on depression")
+
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
+    anxiety = as.character(anxiety)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = anxiety, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Anxiety", y = "Number of activities", title = "Number of Stress releifs activies influence on anxiety")
+
+MentalHealthSurvey |> 
+ mutate(
+    NumberActivities = 
+      case_when(
+      stress_relief_activities == "Nothing" ~ 0,
+      TRUE ~ str_count(stress_relief_activities, ",") + 1 
+      )
+  ) |> 
+  mutate(
+    isolation = as.character(isolation)
+  ) |> 
+  group_by(NumberActivities) |> 
+  ggplot(aes(x = isolation, y = NumberActivities)) + 
+  geom_boxplot() + 
+  labs(x = "Isolation", y = "Number of activities", title = "Number of Stress releifs activies influence on Isolation")
+```
+Turns out that people of all anxiety levels do a similar average amount of activities. 
+
+## Isolation 
+# Overall 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = isolation)) + 
+  geom_bar()
+```
+Isolation is percieved as high. 
+
+## Academic Workload
+# Overall 
+```{r}
+MentalHealthSurvey |> 
+  ggplot(aes(x = academic_workload)) +
+  geom_bar()
+```
+Perceived workload is around level 4 
+
+
+All together there is a lot of different relationships that can be looked into in many different ways. I think focusing on Depression, Anxiety and Isolation as our mental health predictors and then looking at a bunch of different factors in relationship to that is the best way to go about this. 
